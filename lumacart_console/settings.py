@@ -36,6 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'lumacart_console.catalogue',
+    'lumacart_console.orders'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -65,7 +67,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'it-it'
 
 TIME_ZONE = 'UTC'
 
@@ -80,3 +82,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+C2O_API_KEY = 'Q4ybJ8CKmErlOOQaBhhnYABlNMfReVb5ZKhISTteyVzmKqxmHPJFpl1c8g4ncfsc'
