@@ -26,6 +26,15 @@ C2O_PRINT_TYPE_PRINT = 'print'
 C2O_PRINT_TYPE_PRINT_1 = 'print_1colour'
 C2O_PRINT_TYPE_EMBROIDERY = 'embroidery'
 
+class C2OSku(models.Model):
+
+    category = models.CharField(max_length = 255, blank = True)
+    name = models.CharField(max_length = 255, blank = False)
+    in_stock = models.BooleanField()
+    sku_code = models.CharField(max_length = 255, blank = False)
+    colour = models.CharField(max_length = 255, blank = False)
+    size = models.CharField(max_length = 255, blank = False)
+
 class C2OProduct(models.Model):
 
     unique_id = models.CharField(max_length = 255, blank = False, unique = True)

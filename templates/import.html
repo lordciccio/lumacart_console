@@ -1,0 +1,45 @@
+{% extends "menu.html" %}
+{% load i18n %}
+
+{% block main %}
+
+    <h1 class="page-header">Catalogue</h1>
+
+    <h2 class="sub-header">Import C2O catalogue</h2>
+    <form method="POST" action="." enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="file">CSV File</label>
+            <input type="file" id="file" name="file">
+            {% if form.file.errors %}
+                {% for error in form.file.errors %}
+                     <div class="alert alert-danger" role="alert">
+                          {{ error|escape }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+        <button class="btn btn-warning" id="loadingBtn" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Saving...</button>
+
+        {% if saved %}
+            <p/>
+            <div class="alert alert-success" role="alert">
+                 <strong>Success!</strong> Saved {{ saved }} items.
+            </div>
+        {% endif %}
+
+    </form>
+
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $('#submitBtn').click(function() {
+                $(this).hide();
+                $('#loadingBtn').show();
+            })
+        });
+    </script>
+
+
+{% endblock main %}
