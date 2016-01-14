@@ -29,6 +29,7 @@ C2O_PRINT_TYPE_EMBROIDERY = 'embroidery'
 class C2OProduct(models.Model):
 
     unique_id = models.CharField(max_length = 255, blank = False, unique = True)
+    title = models.CharField(max_length = 255, blank = False)
     description = models.TextField(blank = True)
     file_url = models.TextField(blank = True)
     print_position = models.CharField(max_length = 30, default = "4", blank = False, choices = C2O_POSITIONS)

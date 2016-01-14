@@ -5,9 +5,13 @@ from lumacart_console.catalogue.models import C2OProduct
 
 
 class C2OProductAdmin(admin.ModelAdmin):
-    list_display = ['unique_id', 'description', 'print_width', 'print_type']
+    list_display = ['unique_id', 'title', 'colour', 'print_width', 'img_preview']
     search_fields = ['unique_id', 'description']
-    list_filter = ['print_width', 'print_type']
+    list_filter = ['colour', 'print_width', 'print_type']
+
+    def img_preview(self, obj):
+        return '<img src="%s" width="120"/>' % (obj.file_url)
+    img_preview.allow_tags = True
 
 
 admin.site.register(C2OProduct, C2OProductAdmin)

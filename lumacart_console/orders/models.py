@@ -1,4 +1,3 @@
-from uuid import uuid4
 from django.db import models
 
 
@@ -14,7 +13,7 @@ class C2OOrder(models.Model):
     DELIVERY_EXPRESS = 'express'
 
 
-    luma_id = models.CharField(max_length = 255, blank = False, unique = True, default = uuid4)
+    luma_id = models.CharField(max_length = 255, blank = False, unique = True)
     c2o_id = models.CharField(max_length = 255, blank = True)
     creation_date = models.DateTimeField(blank = False, auto_now_add=True)
     last_update = models.DateTimeField(blank = True, auto_now=True)
@@ -39,6 +38,9 @@ class C2OOrder(models.Model):
     address_county	 = models.CharField(max_length = 255, blank = True)
     address_postcode = models.CharField(max_length = 255, blank = False)
     address_country = models.CharField(max_length = 255, blank = False)
+
+    def __unicode__(self):
+        return "Order '%s'" % self.luma_id
 
 class C2OOrderItem(models.Model):
 
