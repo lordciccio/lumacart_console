@@ -1,5 +1,7 @@
 from django.conf.urls import url
-from lumacart_console.orders.views import c2o_send_order
+from lumacart_console.catalogue.views import import_c2o_catalogue
+
 
 urlpatterns =[
+     url(r'^import_c2o/', import_c2o_catalogue),
 ]
