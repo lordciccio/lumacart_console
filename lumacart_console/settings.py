@@ -51,9 +51,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'lumacart_console.urls'
 
-WSGI_APPLICATION = 'lumacart_console.wsgi.application'
-
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -83,4 +80,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-C2O_API_KEY = 'Q4ybJ8CKmErlOOQaBhhnYABlNMfReVb5ZKhISTteyVzmKqxmHPJFpl1c8g4ncfsc'
+C2O_API_KEY = os.environ.get("C2O_API_KEY")
