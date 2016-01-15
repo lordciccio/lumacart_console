@@ -1,4 +1,5 @@
 import logging
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.conf import settings
 from lumacart_console.orders.c2o_api import C2OApi
@@ -6,6 +7,7 @@ from lumacart_console.orders.models import C2OOrder, OrderValidationException
 
 logger = logging.getLogger("project")
 
+@login_required
 def c2o_get_new_orders(request, messages = {}):
     orders = C2OOrder.objects.filter(status__in = [C2OOrder.STATUS_NEW, C2OOrder.STATUS_INVALID, C2OOrder.STATUS_ERROR]).order_by('-creation_date')
     params = {'orders': orders, 'messages': messages}
@@ -24,6 +26,7 @@ def _perform_order_validation(order):
     order.save()
     return success, error
 
+@login_required
 def c2o_check_order(request):
     order_id = request.POST.get('id')
     order = C2OOrder.objects.get(id = order_id)
@@ -35,6 +38,7 @@ def c2o_check_order(request):
         }
     return c2o_get_new_orders(request, messages = messages)
 
+@login_required
 def c2o_send_order(request):
     order_id = request.POST.get('id')
     order = C2OOrder.objects.get(id = order_id)
