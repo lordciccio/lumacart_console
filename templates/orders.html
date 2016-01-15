@@ -36,12 +36,18 @@
 
       <h2 class="sub-header">New orders</h2>
 
+      {% if message %}
+            <div class="alert alert-danger" role="alert">
+                 {{ message }}
+            </div>
+      {% endif %}
+
       <div class="table-responsive">
         <table class="table table-striped table-hover">
           <thead>
                 <tr>
                     <th>ID</th>
-                    <th>C2O ID</th>
+                    <th>C2OID</th>
                     <th>Created</th>
                     <th>Status</th>
                     <th>Customer</th>
@@ -63,7 +69,21 @@
                     <td>{{ order.address_address_line_1 }} {{ order.address_city }} {{ order.address_postcode }}</td>
                     <td>{{ order.address_country }}</td>
                     <td>{{ order.last_update }}</td>
-                    <td></td>
+                    <td>
+                        {% if order.status == 'INVALID' %}
+                            <form method="POST" action="{% url 'check_c2o_order' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value="{{ order.id }}">
+                                <button type="submit" class="btn btn-danger">Re-check order</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="{% url 'send_c2o_order' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value="{{ order.id }}">
+                                <button type="submit" class="btn btn-primary">Send order</button>
+                            </form>
+                        {% endif %}
+                    </td>
                 </tr>
           {% endfor %}
           </tbody>

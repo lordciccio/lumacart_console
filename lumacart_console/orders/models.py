@@ -1,18 +1,21 @@
 from django.db import models
-from lumacart_console.catalogue.models import C2OProduct
+from lumacart_console.catalogue.models import C2OProduct, C2OSku
 from lumacart_console.utils import safe_get
+
+class OrderValidationException(Exception):
+    pass
 
 class C2OOrder(models.Model):
 
     STATUS_NEW = 'NEW'
     STATUS_SENT = 'SENT'
     STATUS_INVALID = 'INVALID'
+    STATUS_ERROR = 'ERROR'
     STATUS_DISPATCHED = 'DISPATCHED'
 
     DELIVERY_STANDARD = 'standard'
     DELIVERY_4DAY = '4day'
     DELIVERY_EXPRESS = 'express'
-
 
     luma_id = models.CharField(max_length = 255, blank = False, unique = True)
     c2o_id = models.CharField(max_length = 255, blank = True)
@@ -23,6 +26,7 @@ class C2OOrder(models.Model):
     status = models.CharField(max_length = 30, default = STATUS_NEW, blank = False, choices = [(STATUS_NEW, STATUS_NEW),
                                                                                           (STATUS_SENT, STATUS_SENT),
                                                                                           (STATUS_INVALID, STATUS_INVALID),
+                                                                                          (STATUS_ERROR, STATUS_ERROR),
                                                                                           (STATUS_DISPATCHED, STATUS_DISPATCHED) ])
     notes = models.TextField(blank = True)
     delivery_method = models.CharField(max_length = 30, default = DELIVERY_STANDARD, blank = False, choices = [(DELIVERY_STANDARD, DELIVERY_STANDARD),
@@ -41,6 +45,10 @@ class C2OOrder(models.Model):
     address_postcode = models.CharField(max_length = 255, blank = False)
     address_country = models.CharField(max_length = 255, blank = False)
 
+    def validate(self):
+        for item in self.items.all():
+            item.validate()
+
     def __str__(self):
         return "Order '%s'" % self.luma_id
 
@@ -49,11 +57,25 @@ class C2OOrderItem(models.Model):
     product_id = models.CharField(max_length = 255, blank = False)
     quantity = models.IntegerField(blank = False)
     size = models.CharField(max_length = 20, blank = True)
-    order = models.ForeignKey(C2OOrder)
+    order = models.ForeignKey(C2OOrder, related_name="items")
     c2o_sku = models.CharField(max_length = 255, blank = True)
+
+    def validate(self, check_for_send = False):
+        product = self.get_product()
+        if not product:
+            raise OrderValidationException("Can't find product '%s'" % self.product_id)
+        if not self.quantity:
+            raise OrderValidationException("Empty quantity for %s" % self)
+        if not self.size:
+            raise OrderValidationException("Empty size for %s" % self)
+        sku = safe_get(C2OSku.objects.filter(name = product.sku_name, colour = product.colour, size = self.size))
+        if not sku:
+            raise OrderValidationException("Can't find sku '%s-%s-%s'" % (product.sku_name, product.colour, self.size))
+        self.c2o_sku = sku.sku_code
+        self.save()
 
     def get_product(self):
         return safe_get(C2OProduct.objects.filter(unique_id=self.product_id))
 
     def __str__(self):
-        return "Product '%s'" % self.product_id
+        return "Item '%s'" % self.product_id

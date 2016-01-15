@@ -132,7 +132,7 @@ LOGGING = {
     'loggers': {
         'project': {
             'handlers': ['console'],
-            'level': 'INFO'
+            'level': 'DEBUG'
         }
     },
 }

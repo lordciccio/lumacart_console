@@ -33,7 +33,7 @@ class C2OOrderItemInline(TabularInline):
     model = C2OOrderItem
     extra = 0
     form = C2OOrderItemInlineForm
-
+    readonly_fields = ('c2o_sku',)
 
 class C2OOrdeForm(forms.ModelForm):
 
@@ -52,5 +52,6 @@ class C2OOrderAdmin(admin.ModelAdmin):
     inlines = [C2OOrderItemInline]
     form = C2OOrdeForm
     exclude = ['luma_id']
+    readonly_fields = ['c2o_id', 'request_json', 'response_body']
 
 admin.site.register(C2OOrder, C2OOrderAdmin)
