@@ -2,17 +2,28 @@ from uuid import uuid4
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.options import TabularInline
+from lumacart_console.catalogue import models
 from lumacart_console.orders.models import C2OOrder, C2OOrderItem
 
 def get_sorted_product_choices():
-    from lumacart_console.catalogue import models
     return models.C2OProduct.objects.all().order_by('title').values_list('unique_id', 'title')
+
+def get_sorted_sizes(product = None):
+    qs = models.C2OSku.objects.all().order_by('size').values_list('size', 'size').distinct()
+    if product:
+        qs = qs.filter(name = product.sku_name)
+    return [('', '')] + list(qs)
 
 class C2OOrderItemInlineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance')
         super(C2OOrderItemInlineForm, self).__init__(*args, **kwargs)
         self.fields['product_id'] = forms.ChoiceField(required = True, choices=get_sorted_product_choices())
+        product = None
+        if instance:
+            product = instance.get_product()
+        self.fields['size'] = forms.ChoiceField(required = False, choices=get_sorted_sizes(product))
 
     class Meta:
         model = C2OOrderItem

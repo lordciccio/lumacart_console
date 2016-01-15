@@ -27,7 +27,7 @@ C2O_PRINT_TYPE_PRINT_1 = 'print_1colour'
 C2O_PRINT_TYPE_EMBROIDERY = 'embroidery'
 
 class C2OSku(models.Model):
-
+    key = models.CharField(max_length = 255, blank = False, primary_key=True)
     category = models.CharField(max_length = 255, blank = True)
     name = models.CharField(max_length = 255, blank = False)
     in_stock = models.BooleanField()
@@ -35,9 +35,17 @@ class C2OSku(models.Model):
     colour = models.CharField(max_length = 255, blank = False)
     size = models.CharField(max_length = 255, blank = False)
 
+    def save(self, **kwargs):
+        self.key = "%s-%s-%s" % (self.name, self.colour, self.size)
+        super(C2OSku, self).save(**kwargs)
+
+    def __str__(self):
+         return "C2O Sku '%s'" % self.key
+
 class C2OProduct(models.Model):
 
     unique_id = models.CharField(max_length = 255, blank = False, unique = True)
+    sku_name = models.CharField(max_length = 255, blank = True)
     title = models.CharField(max_length = 255, blank = False)
     description = models.TextField(blank = True)
     file_url = models.TextField(blank = True)
@@ -46,6 +54,7 @@ class C2OProduct(models.Model):
     print_type = models.CharField(max_length = 30, default = C2O_PRINT_TYPE_PRINT, blank = False, choices = [(C2O_PRINT_TYPE_PRINT, 'Print multi-colour'),
                                                                                                    (C2O_PRINT_TYPE_PRINT_1, "Single-color print"),
                                                                                                    (C2O_PRINT_TYPE_EMBROIDERY, "Embroidery")])
-    colour = models.CharField(max_length = 255, blank = False)
+    colour = models.CharField(max_length = 255, blank = True)
 
-
+    def __str__(self):
+         return "C2O Product '%s'" % self.unique_id
