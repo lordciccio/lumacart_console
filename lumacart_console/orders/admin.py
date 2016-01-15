@@ -46,12 +46,12 @@ class C2OOrdeForm(forms.ModelForm):
         fields = '__all__'
 
 class C2OOrderAdmin(admin.ModelAdmin):
-    list_display = ['luma_id', 'c2o_id', 'creation_date', 'status', 'last_update']
+    list_display = ['luma_id', 'c2o_id', 'creation_date', 'status', 'est_dispatch_date', 'gross_order_value']
     search_fields = ['luma_id', 'c2o_id']
     list_filter = ['status']
     inlines = [C2OOrderItemInline]
     form = C2OOrdeForm
     exclude = ['luma_id']
-    readonly_fields = ['c2o_id', 'request_json', 'response_body']
+    readonly_fields = ['c2o_id', 'request_json', 'response_body', 'est_dispatch_date', 'net_order_value', 'gross_order_value']
 
 admin.site.register(C2OOrder, C2OOrderAdmin)

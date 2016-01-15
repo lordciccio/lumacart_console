@@ -2,45 +2,15 @@
 {% load i18n %}
 {% block main %}
 
-
-    <!--
-     luma_id = models.CharField(max_length = 255, blank = False, unique = True)
-    c2o_id = models.CharField(max_length = 255, blank = True)
-    creation_date = models.DateTimeField(blank = False, auto_now_add=True)
-    last_update = models.DateTimeField(blank = True, auto_now=True)
-    request_json = models.TextField(blank = True)
-    status = models.CharField(max_length = 30, default = STATUS_NEW, blank = False, choices = [(STATUS_NEW, STATUS_NEW),
-                                                                                          (STATUS_SENT, STATUS_SENT),
-                                                                                          (STATUS_INVALID, STATUS_INVALID),
-                                                                                          (STATUS_DISPATCHED, STATUS_DISPATCHED) ])
-    notes = models.TextField(blank = True)
-    delivery_method = models.CharField(max_length = 30, default = DELIVERY_STANDARD, blank = False, choices = [(DELIVERY_STANDARD, DELIVERY_STANDARD),
-                                                                                          (DELIVERY_4DAY, DELIVERY_4DAY),
-                                                                                          (DELIVERY_EXPRESS, DELIVERY_EXPRESS)])
-    individual_bags = models.BooleanField(default = False)
-    customer_name	= models.CharField(max_length = 255, blank = False)
-    customer_email	= models.CharField(max_length = 255, blank = False)
-    customer_telephone	= models.CharField(max_length = 255, blank = True)
-    address_delivery_name	= models.CharField(max_length = 255, blank = True)
-    address_company_name	= models.CharField(max_length = 255, blank = True)
-    address_address_line_1	= models.CharField(max_length = 255, blank = False)
-    address_address_line_2	= models.CharField(max_length = 255, blank = True)
-    address_city	 = models.CharField(max_length = 255, blank = False)
-    address_county	 = models.CharField(max_length = 255, blank = True)
-    address_postcode = models.CharField(max_length = 255, blank = False)
-    address_country
-
-    -->
-
      <h1 class="page-header">Orders</h1>
 
       <h2 class="sub-header">New orders</h2>
 
-      {% if message %}
-            <div class="alert alert-danger" role="alert">
-                 {{ message }}
-            </div>
-      {% endif %}
+      {% for msg_type, msg_list in messages.items %}
+         {% for msg in msg_list %}
+              <div class="alert alert-{{ msg_type }}" role="alert"> {{ msg }} </div>
+         {% endfor %}
+      {% endfor %}
 
       <div class="table-responsive">
         <table class="table table-striped table-hover">
@@ -66,7 +36,7 @@
                     <td>{{ order.creation_date }}</td>
                     <td>{{ order.status }}</td>
                     <td>{{ order.customer_email }}</td>
-                    <td>{{ order.address_address_line_1 }} {{ order.address_city }} {{ order.address_postcode }}</td>
+                    <td>{{ order.address_address_line_1 }} {{ order.address_address_line_2 }}<br/>{{ order.address_city }} {{ order.address_postcode }}</td>
                     <td>{{ order.address_country }}</td>
                     <td>{{ order.last_update }}</td>
                     <td>
@@ -80,7 +50,11 @@
                             <form method="POST" action="{% url 'send_c2o_order' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="id" value="{{ order.id }}">
-                                <button type="submit" class="btn btn-primary">Send order</button>
+                                {% if order.status == 'NEW' %}
+                                    <button type="submit" class="btn btn-primary">Send order</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-danger">Re-send order</button>
+                                {% endif %}
                             </form>
                         {% endif %}
                     </td>

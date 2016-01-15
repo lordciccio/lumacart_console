@@ -1,6 +1,9 @@
 import json
 import logging
 import urllib.request
+from datetime import datetime
+from urllib.error import HTTPError
+from lumacart_console.utils import get_exception_trace
 
 logger = logging.getLogger("project")
 
@@ -8,6 +11,25 @@ class C2OApi(object):
 
     def __init__(self, api_key):
         self.api_key = api_key
+
+    def _process_response(self, order, body):
+        order.response_body = body
+        response = json.loads(body.decode('utf8'))
+        if response['status']['code'] == 'OK':
+            order.status = order.STATUS_SENT
+            order.c2o_id = response['order_details']['order_id']
+            order.est_dispatch_date = datetime.strptime(response['order_details']['est_dispatch_date'], "%d/%m/%Y")
+            order.net_order_value = response['order_details']['net_order_value']
+            order.gross_order_value = response['order_details']['gross_order_value']
+            messages = ["Sent %s: %s" % (order, response['status']['msg'])]
+        else:
+            order.status = order.STATUS_ERROR
+            messages = [response['status']['msg']]
+        if 'warnings' in response:
+            warnings = response['warnings'].get('warning', [])
+            messages.extend(warnings)
+        order.save()
+        return messages
 
     def send_order(self, order):
         data = {
@@ -57,22 +79,32 @@ class C2OApi(object):
             items.append(item_data)
         data['products']['product'] = items
 
-        logger.debug(data)
-
-        req = urllib.request.Request('https://www.clothes2order.com/api/post-order/',
-                                     data=json.dumps(data).encode('utf8'),
-                                     headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
-
-        response = None
         try:
+            logger.debug(data)
+            json_data = json.dumps(data)
+            order.request_json = json_data
+            order.save()
+            req = urllib.request.Request('https://www.clothes2order.com/api/post-order/',
+                                         data=json.dumps(data).encode('utf8'),
+                                         headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
+
             response = urllib.request.urlopen(req)
-            order.response_body = response
-
+            order.response_body = response.read()
+            logger.debug(order.response_body)
+            messages = self._process_response(order, order.response_body)
+            return True, messages
+        except HTTPError as he:
+            error = he.read()
+            if he.code == 400:
+                messages = self._process_response(order, error)
+            else:
+                messages = [error]
+                logger.error(error)
         except Exception as e:
-            logger.error(str(e))
-            order.status = order.STATUS_ERROR
+            logger.error(get_exception_trace())
+            messages = [str(e)]
 
+        logger.error('messages:\n%s' % messages)
+        order.status = order.STATUS_ERROR
         order.save()
-
-
-        return response
+        return False, messages

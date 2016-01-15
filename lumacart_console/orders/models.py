@@ -45,6 +45,10 @@ class C2OOrder(models.Model):
     address_postcode = models.CharField(max_length = 255, blank = False)
     address_country = models.CharField(max_length = 255, blank = False)
 
+    est_dispatch_date = models.DateField(blank = True, null=True)
+    net_order_value = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
+    gross_order_value = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
+
     def validate(self):
         for item in self.items.all():
             item.validate()
