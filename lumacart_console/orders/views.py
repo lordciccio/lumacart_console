@@ -10,7 +10,8 @@ logger = logging.getLogger("project")
 @login_required
 def c2o_get_new_orders(request, messages = {}):
     orders = C2OOrder.objects.filter(status__in = [C2OOrder.STATUS_NEW, C2OOrder.STATUS_INVALID, C2OOrder.STATUS_ERROR]).order_by('-creation_date')
-    params = {'orders': orders, 'messages': messages}
+    sent_orders = C2OOrder.objects.filter(status__in = [C2OOrder.STATUS_SENT]).order_by('-creation_date')
+    params = {'orders': orders, 'messages': messages, 'sent_orders': sent_orders}
     return render(request, "orders.html", params)
 
 def _perform_order_validation(order):

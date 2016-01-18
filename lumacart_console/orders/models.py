@@ -19,6 +19,7 @@ class C2OOrder(models.Model):
 
     luma_id = models.CharField(max_length = 255, blank = False, unique = True)
     c2o_id = models.CharField(max_length = 255, blank = True)
+    c2o_status = models.CharField(max_length = 255, blank = True)
     creation_date = models.DateTimeField(blank = False, auto_now_add=True)
     last_update = models.DateTimeField(blank = True, auto_now=True)
     request_json = models.TextField(blank = True)
@@ -48,6 +49,11 @@ class C2OOrder(models.Model):
     est_dispatch_date = models.DateField(blank = True, null=True)
     net_order_value = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
     gross_order_value = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
+    shipped_by	= models.CharField(max_length = 255, blank = True)
+    tracking_link = models.TextField(blank = True)
+
+    def has_issues(self):
+        return self.status in [self.STATUS_INVALID, self.STATUS_ERROR] or self.c2o_status in ['On Hold']
 
     def validate(self):
         for item in self.items.all():

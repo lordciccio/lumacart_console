@@ -12,7 +12,7 @@ class C2OApi(object):
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def _process_response(self, order, body):
+    def _process_send_response(self, order, body):
         order.response_body = body
         response = json.loads(body.decode('utf8'))
         if response['status']['code'] == 'OK':
@@ -29,6 +29,20 @@ class C2OApi(object):
             warnings = response['warnings'].get('warning', [])
             messages.extend(warnings)
         order.save()
+        return messages
+
+    def _process_fetch_response(self, order, body):
+        order.response_body = body
+        response = json.loads(body.decode('utf8'))
+        if response['status']['code'] == 'OK':
+            order.est_dispatch_date = datetime.strptime(response['order_details']['est_dispatch_date'], "%d/%m/%Y")
+            order.net_order_value = response['order_details']['net_order_value']
+            order.gross_order_value = response['order_details']['gross_order_value']
+            order.c2o_status = response['order_details']['order_status']
+            order.shipped_by = response['order_details']['shipped_by']
+            order.tracking_link = response['order_details']['tracking_link']
+            order.save()
+        messages = [response['status']['msg']]
         return messages
 
     def send_order(self, order):
@@ -85,18 +99,18 @@ class C2OApi(object):
             order.request_json = json_data
             order.save()
             req = urllib.request.Request('https://www.clothes2order.com/api/post-order/',
-                                         data=json.dumps(data).encode('utf8'),
+                                         data=json_data.encode('utf8'),
                                          headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
 
             response = urllib.request.urlopen(req)
             order.response_body = response.read()
             logger.debug(order.response_body)
-            messages = self._process_response(order, order.response_body)
+            messages = self._process_send_response(order, order.response_body)
             return True, messages
         except HTTPError as he:
             error = he.read()
             if he.code == 400:
-                messages = self._process_response(order, error)
+                messages = self._process_send_response(order, error)
             else:
                 messages = [error]
                 logger.error(error)
@@ -107,4 +121,32 @@ class C2OApi(object):
         logger.error('messages:\n%s' % messages)
         order.status = order.STATUS_ERROR
         order.save()
+        return False, messages
+
+    def check_order_status(self, order):
+        data = {
+            "api_key": self.api_key,
+            "order": {
+                "your_order_id": order.luma_id
+            }
+        }
+        try:
+            logger.debug(data)
+            json_data = json.dumps(data)
+            req = urllib.request.Request('https://www.clothes2order.com/api/fetch-order/',
+                                         data=json_data.encode('utf8'),
+                                         headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
+
+            response = urllib.request.urlopen(req)
+            order.response_body = response.read()
+            logger.debug(order.response_body)
+            messages = self._process_fetch_response(order, order.response_body)
+            return True, messages
+        except HTTPError as he:
+            error = he.read()
+            logger.error(error)
+            messages = [error]
+        except Exception as e:
+            logger.error(get_exception_trace())
+            messages = [str(e)]
         return False, messages
