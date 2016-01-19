@@ -105,6 +105,17 @@ class EtsyAPI(object):
         r = oauth.put("https://openapi.etsy.com/v2/receipts/%s" % receipt_id, data)
         data = json.loads(r.content.decode('utf-8'))
 
+    def get_shop_active_items(self):
+        oauth = OAuth1Session(self.client_key,
+                          client_secret=self.client_secret,
+                          resource_owner_key=self.resource_owner_key,
+                          resource_owner_secret=self.resource_owner_secret)
+
+        r = oauth.get("https://openapi.etsy.com/v2/shops/%s/listings/active?limit=300" % self.shop_id)
+        data = json.loads(r.content.decode('utf-8'))
+        return data['results']
+
+
 
 if __name__ == '__main__':
     #how to get ETSY_RESOURCE_OWNER_KEY and ETSY_RESOURCE_OWNER_SECRET:

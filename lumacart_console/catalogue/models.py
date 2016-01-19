@@ -55,6 +55,7 @@ class C2OProduct(models.Model):
                                                                                                    (C2O_PRINT_TYPE_PRINT_1, "Single-color print"),
                                                                                                    (C2O_PRINT_TYPE_EMBROIDERY, "Embroidery")])
     colour = models.CharField(max_length = 255, blank = True)
+    etsy_listing_id = models.CharField(max_length = 255, blank = True)
 
     def __str__(self):
          return "C2O Product '%s'" % self.unique_id
