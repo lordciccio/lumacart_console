@@ -3,3 +3,4 @@
 *.log
 *__pycache__/
 lumacart_console/prod_params.py
+lumacart_console/prod_settings.py
