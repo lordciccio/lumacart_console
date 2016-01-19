@@ -128,13 +128,39 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'file': {
+            'level': 'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename':  os.path.join(BASE_DIR, 'console.log'),
+            'maxBytes': 1024*1024*10, # 10 MB
+            'backupCount': 5,
+            'formatter':'verbose'
+        },
     },
     'loggers': {
         'project': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG'
         }
     },
 }
 
-C2O_API_KEY = os.environ.get("C2O_API_KEY")
+from lumacart_console import prod_params
+
+HOST = prod_params.HOST
+EMAIL_SENDER = prod_params.EMAIL_SENDER
+EMAIL_SUBJECT_PREFIX = "[Lumacart Console] "
+EMAIL_HOST = prod_params.EMAIL_HOST
+EMAIL_HOST_USER = prod_params.EMAIL_HOST_USER
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_PASSWORD = prod_params.EMAIL_HOST_PASSWORD
+ADMIN_EMAIL = prod_params.ADMIN_EMAIL
+
+C2O_API_KEY = prod_params.C2O_API_KEY
+
+ETSY_SHOP_ID = prod_params.ETSY_SHOP_ID
+ETSY_RESOURCE_OWNER_KEY = prod_params.ETSY_RESOURCE_OWNER_KEY
+ETSY_RESOURCE_OWNER_SECRET = prod_params.ETSY_RESOURCE_OWNER_SECRET
+ETSY_CLIENT_KEY = prod_params.ETSY_CLIENT_KEY
+ETSY_CLIENT_SECRET = prod_params.ETSY_CLIENT_SECRET

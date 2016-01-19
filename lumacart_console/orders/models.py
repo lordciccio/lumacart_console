@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import models
 from lumacart_console.catalogue.models import C2OProduct, C2OSku
 from lumacart_console.utils import safe_get
@@ -52,12 +54,19 @@ class C2OOrder(models.Model):
     shipped_by	= models.CharField(max_length = 255, blank = True)
     tracking_link = models.TextField(blank = True)
 
+    store_platform = models.CharField(max_length = 30, blank = True)
+    store_order_id = models.CharField(max_length = 255, blank = True)
+
     def has_issues(self):
         return self.status in [self.STATUS_INVALID, self.STATUS_ERROR] or self.c2o_status in ['On Hold']
 
     def validate(self):
         for item in self.items.all():
             item.validate()
+
+    @classmethod
+    def get_new_luma_id(cls):
+        return uuid4()
 
     def __str__(self):
         return "Order '%s'" % self.luma_id

@@ -38,7 +38,8 @@ class C2OOrderItemInline(TabularInline):
 class C2OOrdeForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
-        self.instance.luma_id = uuid4()
+        if not self.instance.luma_id:
+            self.instance.luma_id = C2OOrder.get_new_luma_id()
         return super(C2OOrdeForm, self).save(*args, **kwargs)
 
     class Meta:
@@ -46,7 +47,7 @@ class C2OOrdeForm(forms.ModelForm):
         fields = '__all__'
 
 class C2OOrderAdmin(admin.ModelAdmin):
-    list_display = ['luma_id', 'c2o_id', 'c2o_status', 'creation_date', 'status', 'est_dispatch_date', 'gross_order_value']
+    list_display = ['luma_id', 'c2o_id', 'c2o_status', 'creation_date', 'status', 'est_dispatch_date', 'gross_order_value', 'notes']
     search_fields = ['luma_id', 'c2o_id']
     list_filter = ['status', 'c2o_status']
     inlines = [C2OOrderItemInline]

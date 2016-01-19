@@ -25,6 +25,7 @@
                     <th>Email</th>
                     <th>Address</th>
                     <th>Country</th>
+                    <th>Notes</th>
                     <th>Last update</th>
                     <th></th>
                 </tr>
@@ -41,6 +42,7 @@
                     <td>{{ order.customer_email }}</td>
                     <td>{{ order.address_address_line_1 }} {{ order.address_address_line_2 }}<br/>{{ order.address_city }} {{ order.address_postcode }}</td>
                     <td>{{ order.address_country }}</td>
+                    <td>{{ order.notes }}</td>
                     <td>{{ order.last_update }}</td>
                     <td>
                         {% if order.status == 'INVALID' %}

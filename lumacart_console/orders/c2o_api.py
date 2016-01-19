@@ -131,7 +131,6 @@ class C2OApi(object):
             }
         }
         try:
-            logger.debug(data)
             json_data = json.dumps(data)
             req = urllib.request.Request('https://www.clothes2order.com/api/fetch-order/',
                                          data=json_data.encode('utf8'),
@@ -139,7 +138,6 @@ class C2OApi(object):
 
             response = urllib.request.urlopen(req)
             order.response_body = response.read()
-            logger.debug(order.response_body)
             messages = self._process_fetch_response(order, order.response_body)
             return True, messages
         except HTTPError as he:
