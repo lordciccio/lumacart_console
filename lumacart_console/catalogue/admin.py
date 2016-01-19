@@ -42,6 +42,7 @@ class C2OProductAdmin(admin.ModelAdmin):
     list_display = ['unique_id', 'title', 'colour', 'print_width', 'img_preview']
     search_fields = ['unique_id', 'description']
     list_filter = ['colour', 'print_width', 'print_type']
+    readonly_fields = ['etsy_listing_id']
     form = C2OProductAdminForm
 
     def img_preview(self, obj):
