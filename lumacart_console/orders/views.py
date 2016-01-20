@@ -56,7 +56,7 @@ def c2o_send_order(request):
         else:
             api = C2OApi(settings.C2O_API_KEY)
             success, messages = api.send_order(order)
-    messages = {
-        'success' if success else 'danger': messages
-    }
+            messages = {
+                'success' if success else 'danger': messages
+            }
     return c2o_get_new_orders(request, messages = messages)

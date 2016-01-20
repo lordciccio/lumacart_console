@@ -17,3 +17,7 @@ def snake_string(s):
      # Replace all runs of whitespace with a single dash
      return re.sub(r"\s+", '_', s).lower()
 
+def blank_if_none(s):
+    if not s:
+        return ''
+    return s

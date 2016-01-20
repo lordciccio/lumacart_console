@@ -28,6 +28,8 @@ try:
     saved = 0
     for i in items:
         product, created = C2OProduct.objects.get_or_create(etsy_listing_id=i['listing_id'])
+        if created:
+            product.sku_name = "Gildan Men's Ring Spun, SoftStyle T-Shirt"
         product.unique_id = snake_string(i['title'])
         product.title = i['title']
         product.description = i['description']
