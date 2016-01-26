@@ -20,6 +20,7 @@ class ImportForm(forms.Form):
     file = forms.FileField()
 
 C2O_CATEGORIES = ['T-Shirts', 'Aprons', 'Bags']
+C2O_NAME_CONTAINS = ['Gildan']
 
 @login_required
 def import_c2o_catalogue(request):
@@ -33,6 +34,12 @@ def import_c2o_catalogue(request):
             models.C2OSku.objects.all().delete()
             saved = 0
             for record in csv_reader.iter_doc():
+                category = record['Product Category']
+                name = record['Product Name']
+                if not category in C2O_CATEGORIES:
+                    pass
+                if not any([substr in name for substr in C2O_NAME_CONTAINS]):
+                    pass
                 sku = safe_get(models.C2OSku.objects.filter(sku_code = record['SKU']))
                 if not sku:
                     sku = models.C2OSku(sku_code = record['SKU'])
@@ -41,9 +48,8 @@ def import_c2o_catalogue(request):
                 sku.colour = record['Colour']
                 sku.in_stock = int(record['In Stock'])
                 sku.size = record['Size']
-                if sku.category in C2O_CATEGORIES:
-                    sku.save()
-                    saved += 1
+                sku.save()
+                saved += 1
                 logger.info("saved sku '%s'" % sku.sku_code)
             params['saved'] = str(saved)
     else:
