@@ -33,13 +33,14 @@ def import_c2o_catalogue(request):
             csv_reader.parse_doc(open(uploaded_file_path, encoding='utf-8'))
             models.C2OSku.objects.all().delete()
             saved = 0
+            num_lines = sum(1 for line in open(uploaded_file_path, encoding='utf-8'))
             for record in csv_reader.iter_doc():
                 category = record['Product Category']
                 name = record['Product Name']
                 if not category in C2O_CATEGORIES:
-                    pass
+                    continue
                 if not any([substr in name for substr in C2O_NAME_CONTAINS]):
-                    pass
+                    continue
                 sku = safe_get(models.C2OSku.objects.filter(sku_code = record['SKU']))
                 if not sku:
                     sku = models.C2OSku(sku_code = record['SKU'])
@@ -50,8 +51,10 @@ def import_c2o_catalogue(request):
                 sku.size = record['Size']
                 sku.save()
                 saved += 1
-                logger.info("saved sku '%s'" % sku.sku_code)
+                logger.info("saved sku '%s' (%s) (%s/%s)", sku.name, sku.sku_code, saved, num_lines)
+            logger.info("End import, saved %s records out of %s", saved, num_lines)
             params['saved'] = str(saved)
+            params['num_lines'] = str(num_lines)
     else:
         form = ImportForm()
     params['form'] = form
