@@ -39,8 +39,8 @@ class C2OApi(object):
             order.net_order_value = response['order_details']['net_order_value']
             order.gross_order_value = response['order_details']['gross_order_value']
             order.c2o_status = response['order_details']['order_status']
-            order.shipped_by = response['order_details']['shipped_by']
-            order.tracking_link = response['order_details']['tracking_link']
+            order.shipped_by = response['order_details'].get('shipped_by', '')
+            order.tracking_link = response['order_details'].get('tracking_link', '')
             order.save()
         messages = [response['status']['msg']]
         return messages
