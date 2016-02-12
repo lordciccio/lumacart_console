@@ -3,11 +3,17 @@
 import os
 import sys
 import logging
-import django
 
 project_home = u'/home/lumacart/projects/lumacart_console'
 if project_home not in sys.path:
     sys.path.append(project_home)
+
+activate_this = '/home/lumacart/ve/bin/activate_this.py'
+with open(activate_this) as f:
+    code = compile(f.read(), activate_this, 'exec')
+    exec(code, dict(__file__=activate_this))
+
+import django
 
 # set environment variable to tell django where your settings.py is
 os.environ['DJANGO_SETTINGS_MODULE'] = 'lumacart_console.prod_settings'
