@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 import django
+import html.parser
 
 project_home = u'/home/lumacart/projects/lumacart_console'
 if project_home not in sys.path:
@@ -27,12 +28,13 @@ try:
     logger.info("Found %d items", len(items))
     saved = 0
     for i in items:
-        slug_title = snake_string(i['title'])
+        title = html.unescape(i['title'])
+        slug_title = snake_string(title)
         product, created = C2OProduct.objects.get_or_create(unique_id=slug_title)
         if created:
             product.sku_name = "Gildan Men's Ring Spun, SoftStyle T-Shirt"
         product.etsy_listing_id = i['listing_id']
-        product.title = i['title']
+        product.title = title
         product.description = i['description']
         product.save()
         saved += 1
