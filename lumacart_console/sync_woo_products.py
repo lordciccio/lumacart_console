@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.4
-
+import json
 import os
 import sys
 import logging
@@ -34,7 +34,7 @@ try:
     #f.write(data.text)
     #sys.exit(0)
     data = open('woo_products.json', 'rt').read()
-    data_json = data.json()
+    data_json = json.loads(data)
     items = data_json['products']
     logger.info("Found %d items", len(items))
     saved = 0
