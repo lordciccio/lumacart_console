@@ -26,7 +26,7 @@ from lumacart_console.orders.models import C2OOrder
 from lumacart_console.utils import get_exception_trace
 
 try:
-    logger.info("Checking orders status...")
+    logger.info("Checking C2O orders status...")
     for order in C2OOrder.objects.filter(status__in = [C2OOrder.STATUS_SENT]):
         update_order_status(order)
 

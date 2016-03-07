@@ -56,6 +56,12 @@ class C2OProduct(models.Model):
                                                                                                    (C2O_PRINT_TYPE_EMBROIDERY, "Embroidery")])
     colour = models.CharField(max_length = 255, blank = True)
     etsy_listing_id = models.CharField(max_length = 255, blank = True)
+    woo_listing_id = models.CharField(max_length = 255, blank = True)
 
     def __str__(self):
          return "C2O Product '%s'" % self.unique_id
+
+
+class WooVariantSku(models.Model):
+    product = models.ForeignKey("C2OProduct", related_name="woo_variants")
+    sku = models.CharField(max_length = 255, blank = False)

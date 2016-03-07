@@ -27,10 +27,11 @@ try:
     logger.info("Found %d items", len(items))
     saved = 0
     for i in items:
-        product, created = C2OProduct.objects.get_or_create(etsy_listing_id=i['listing_id'])
+        slug_title = snake_string(i['title'])
+        product, created = C2OProduct.objects.get_or_create(unique_id=slug_title)
         if created:
             product.sku_name = "Gildan Men's Ring Spun, SoftStyle T-Shirt"
-        product.unique_id = snake_string(i['title'])
+        product.etsy_listing_id = i['listing_id']
         product.title = i['title']
         product.description = i['description']
         product.save()

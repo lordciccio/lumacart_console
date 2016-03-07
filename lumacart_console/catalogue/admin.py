@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.options import TabularInline
 from lumacart_console.catalogue import models
-from lumacart_console.catalogue.models import C2OProduct, C2OSku
+from lumacart_console.catalogue.models import C2OProduct, C2OSku, WooVariantSku
+
 
 def get_sorted_sku_names_choices():
     return models.C2OSku.objects.all().order_by('name').values_list('name', 'name').distinct()
@@ -38,12 +40,17 @@ class C2OProductAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
+class WooVariantSkuInline(TabularInline):
+    model = WooVariantSku
+    extra = 0
+
 class C2OProductAdmin(admin.ModelAdmin):
     list_display = ['unique_id', 'title', 'colour', 'print_width', 'img_preview']
     search_fields = ['unique_id', 'description']
     list_filter = ['colour', 'print_width', 'print_type']
-    readonly_fields = ['etsy_listing_id']
+    readonly_fields = ['etsy_listing_id', 'woo_listing_id']
     form = C2OProductAdminForm
+    inlines = [WooVariantSkuInline]
 
     def img_preview(self, obj):
         return '<img src="%s" width="120"/>' % (obj.file_url)

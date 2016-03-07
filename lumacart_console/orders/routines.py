@@ -90,7 +90,6 @@ def check_for_new_etsy_orders():
                         logger.warning("Can't find an Etsy product for %s, title: '%s' - listing_id: '%s'" % (order, item['title'], item['listing_id']))
                         send_admin_email("Order #%s - product missing!" % order.luma_id, "Can't find an Etsy product for order #%s, title: '%s' - listing_id: '%s'" % (order.luma_id, item['title'], item['listing_id']))
                         continue
-                    print(item['size'], convert_to_c2o_size(item['size']))
                     C2OOrderItem.objects.create(order = order,
                                                 product_id = product.unique_id,
                                                 size = convert_to_c2o_size(item['size']),
