@@ -22,14 +22,18 @@ from django.conf import settings
 
 try:
     logger.info("Syncing products from WooCommerce...")
-    wcapi = API(
-        url=settings.WOO_SITE_URL,
-        consumer_key=settings.WOO_CONSUMER_KEY,
-        consumer_secret=settings.WOO_CONSUMER_SECRET,
-        timeout=60
-    )
+    #wcapi = API(
+    #    url=settings.WOO_SITE_URL,
+    #    consumer_key=settings.WOO_CONSUMER_KEY,
+    #    consumer_secret=settings.WOO_CONSUMER_SECRET,
+    #    timeout=60
+    #)
 
-    data = wcapi.get("products?filter[limit]=1000")
+    #data = wcapi.get("products?filter[limit]=1000")
+    #f = open('woo_products.json', 'wt')
+    #f.write(data.text)
+    #sys.exit(0)
+    data = open('woo_products.json', 'rt').read()
     data_json = data.json()
     items = data_json['products']
     logger.info("Found %d items", len(items))
