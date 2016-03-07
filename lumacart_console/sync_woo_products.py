@@ -5,13 +5,12 @@ import sys
 import logging
 import django
 
-#project_home = u'/home/lumacart/projects/lumacart_console'
-project_home = u'/Users/mzaccariotto/Lumacart/projects/lumacart_console'
+project_home = u'/home/lumacart/projects/lumacart_console'
 if project_home not in sys.path:
     sys.path.append(project_home)
 
 # set environment variable to tell django where your settings.py is
-os.environ['DJANGO_SETTINGS_MODULE'] = 'lumacart_console.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'lumacart_console.prod_settings'
 django.setup()
 logger = logging.getLogger("project")
 
@@ -24,7 +23,7 @@ from django.conf import settings
 try:
     logger.info("Syncing products from WooCommerce...")
     wcapi = API(
-        url="http://www.lumacart.com",
+        url=settings.WOO_SITE_URL,
         consumer_key=settings.WOO_CONSUMER_KEY,
         consumer_secret=settings.WOO_CONSUMER_SECRET,
         timeout=60
