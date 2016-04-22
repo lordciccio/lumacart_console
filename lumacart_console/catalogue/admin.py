@@ -52,6 +52,18 @@ class C2OProductAdmin(admin.ModelAdmin):
     form = C2OProductAdminForm
     inlines = [WooVariantSkuInline]
 
+    def duplicate_record(self, request, queryset):
+        model = self.model
+        fields = model._meta.local_fields
+        for object in queryset:
+            object.unique_id = object.unique_id + '_copy'
+            object.pk = None
+            object.save()
+
+    duplicate_record.short_description = "Duplicate selected record"
+
+    actions = [duplicate_record]
+
     def img_preview(self, obj):
         return '<img src="%s" width="120"/>' % (obj.file_url)
     img_preview.allow_tags = True
