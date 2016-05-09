@@ -3,7 +3,7 @@ import logging
 import urllib.request
 from datetime import datetime
 from urllib.error import HTTPError
-from lumacart_console.utils import get_exception_trace
+from lumacart_console.utils import get_exception_trace, is_sequence
 
 logger = logging.getLogger("project")
 
@@ -27,6 +27,8 @@ class C2OApi(object):
             messages = [response['status']['msg']]
         if 'warnings' in response:
             warnings = response['warnings'].get('warning', [])
+            if not is_sequence(warnings):
+                warnings = [warnings]
             messages.extend(warnings)
         order.save()
         return messages

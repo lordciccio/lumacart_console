@@ -28,7 +28,7 @@ def update_order_status(order):
             try:
                 order.status = C2OOrder.STATUS_DISPATCHED
                 logger.info("%s c2o status is now %s!", order, order.c2o_status)
-                send_admin_email("Order #%s dispatched" % order.luma_id, "C2O service has dispatched order #%s" % order.luma_id)
+                send_admin_email("Order #%s dispatched" % order.luma_id, "C2O service has dispatched order #%s.\nTracking link is: %s" % (order.luma_id, order.tracking_link))
                 order.save()
 
                 if order.store_platform == 'etsy':

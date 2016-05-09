@@ -21,3 +21,6 @@ def blank_if_none(s):
     if not s:
         return ''
     return s
+
+def is_sequence(unknown):
+    return type(unknown) == type([]) or type(unknown) == type(())
