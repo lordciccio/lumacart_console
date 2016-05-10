@@ -96,5 +96,6 @@ def check_for_new_etsy_orders():
                                                 quantity = item['quantity'])
                 send_admin_email("New order from Etsy", "Your new Etsy order can be found here: %s" % link)
             else:
-                logger.warning("order with etsy id '%s' already exists!", receipt_id)
-                send_admin_email("Order duplicated from Etsy", "Order with etsy id '%s' already exists!" % receipt_id)
+                if order.status == C2OOrder.STATUS_NEW:
+                    logger.warning("new order with etsy id '%s' already exists!", receipt_id)
+                    send_admin_email("New Order duplicated from Etsy", "Order with etsy id '%s' already exists!" % receipt_id)
