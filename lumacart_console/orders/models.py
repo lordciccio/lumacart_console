@@ -31,7 +31,8 @@ class C2OOrder(models.Model):
                                                                                           (STATUS_SENT, STATUS_SENT),
                                                                                           (STATUS_INVALID, STATUS_INVALID),
                                                                                           (STATUS_ERROR, STATUS_ERROR),
-                                                                                          (STATUS_DISPATCHED, STATUS_DISPATCHED) ])
+                                                                                          (STATUS_DISPATCHED, STATUS_DISPATCHED),
+                                                                                          (STATUS_CANCELED, STATUS_CANCELED)])
     notes = models.TextField(blank = True)
     delivery_method = models.CharField(max_length = 30, default = DELIVERY_STANDARD, blank = False, choices = [(DELIVERY_STANDARD, DELIVERY_STANDARD),
                                                                                           (DELIVERY_4DAY, DELIVERY_4DAY),
